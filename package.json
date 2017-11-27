@@ -1,0 +1,20 @@
+{
+  "name": "selvaconsole",
+  "version": "1.0.0",
+  "description": "Simple JS console ",
+  "main": "index.js",
+  "author": "selvaganeshrajam@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    }
+  },
+  "dependencies": {
+    "eslint": "^4.12.0"
+  }
+}
