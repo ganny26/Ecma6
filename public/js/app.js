@@ -132,3 +132,29 @@ let stringifyContent = (o, simple, visited) => {
     }
     return json;
 }
+
+
+/**
+ * method to sort data
+ * @param {*} a 
+ * @param {*} b 
+ */
+let sortData = (a, b) => {
+    return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
+}
+
+
+
+/**
+ * method to clean the console
+ * @param {*} s 
+ */
+let clearConsole = (s) => {
+    s = s instanceof Array ? s.join(', ') : s;
+    return (s || '').replace(/[<&]/g, function(m) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;'
+        }[m];
+    });
+}
