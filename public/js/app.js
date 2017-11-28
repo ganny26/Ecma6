@@ -158,3 +158,76 @@ let clearConsole = (s) => {
         }[m];
     });
 }
+
+
+/**
+ * method to log console result/error to right side
+ * @param {*} msg 
+ * @param {*} className 
+ */
+let log = (msg, className) => {
+    var li = document.createElement('li');
+    var div = document.createElement('div');
+    div.innerHTML = typeof msg === 'string' ? clearConsole(msg) : msg;
+    prettyPrint([div]);
+    li.className = className || 'log';
+    li.appendChild(div);
+    appendLog(li);
+}
+
+
+
+/**
+ * method to print that text which entered to right side
+ * @param {*} cmd 
+ */
+let echo = (cmd) => {
+    var li = document.createElement('li');
+    li.className = 'echo';
+    li.innerHTML = clearConsole(cmd) + '<a href="/?' + encodeURIComponent(cmd) + '" class="permalink" title="permalink">link</a></div>';
+    logAfter = null;
+    if (output.querySelector) {
+        logAfter = output.querySelector('li.echo') || null;
+    } else {
+        var lis = document.getElementsByTagName('li'),
+            len = lis.length,
+            i;
+        for (i = 0; i < len; i++) {
+            if (lis[i].className.indexOf('echo') !== -1) {
+                logAfter = lis[i];
+                break;
+            }
+        }
+    }
+    appendLog(li, true);
+}
+
+
+/**
+ * access info object at window level
+ * @param {*} cmd 
+ */
+window.info = function(cmd) {
+    var li = document.createElement('li');
+    li.className = 'info';
+    li.innerHTML = '<span class="gutter"></span><div>' + clearConsole(cmd) + '</div>';
+    appendLog(li);
+}
+
+
+/**
+ * method to append logs to right side
+ * @param {*} el 
+ * @param {*} echo 
+ */
+let appendLog = (el, echo) => {
+    if (echo) {
+        if (!output.firstChild) {
+            output.appendChild(el);
+        } else {
+            output.insertBefore(el, output.firstChild);
+        }
+    } else {
+        output.insertBefore(el, logAfter ? logAfter : output.lastChild.nextSibling);
+    }
+}
