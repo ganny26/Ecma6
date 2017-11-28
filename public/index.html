@@ -3,31 +3,32 @@
 
 <head>
     <title>selvaconsole</title>
-    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="stylesheet" href="/css/app.min.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
         crossorigin="anonymous">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">My Console</a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" id="btn_get_history" href="#"> @history </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">My Javascript Console</a>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                      <a class="nav-link" id="btn_get_history" href="#"> @history </a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
     <div class="container console-container">
         <div class="row">
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-12">
                         <h4>Console Editor</h4>
-                        <p>Type Java script code here !</p>
+                        <p>Type Java script code here ! </p>
                         <div>
-                            <textarea autofocus id="exec" rows="1"></textarea>
+                            <textarea autofocus id="exec" 
+                            rows="1"></textarea>
                         </div>
                     </div>
                 </div>
@@ -45,8 +46,7 @@
             </div>
         </div>
     </div>
-
-    <script src="/js/app.js"></script>
+    <script src="/js/bundle.js"></script>
+    <script src="/js/pretty.js"></script>
 </body>
-
 </html>
