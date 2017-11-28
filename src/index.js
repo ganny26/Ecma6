@@ -1,13 +1,20 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-
+import express from 'express';
+import bodyparse from 'body-parser';
+import config from '../config';
+import approute from '../routes/approute';
 const app = express();
-
-
 
 app.use(express.static('public'));
 
+/**
+ * route for commands
+ */
+app.use('/remote', approute);
 
-const server = app.listen(process.env.PORT || 7000, () => {
-    console.log(`App running on port, ${server.address().port}`);
+/**
+ * node server to listen port
+ */
+const server = app.listen(config.port, () => {
+    const port = server.address().port;
+    console.log(`App listening on port ${port}`);
 });
