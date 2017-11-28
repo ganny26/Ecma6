@@ -9,7 +9,7 @@ app.use(express.static('public'));
 /**
  * route for commands
  */
-app.use('/remote', approute);
+app.use('/api', approute);
 
 /**
  * node server to listen port
