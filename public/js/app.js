@@ -231,3 +231,81 @@ let appendLog = (el, echo) => {
         output.insertBefore(el, logAfter ? logAfter : output.lastChild.nextSibling);
     }
 }
+
+
+/**
+ * method to executeCommand the remote commands from text ares
+ * @param {*} cmd 
+ */
+let executeCommand = (cmd) => {
+    console.log('command', cmd);
+    var rawoutput = null,
+        className = 'response',
+        internalCmd = internalCommand(cmd);
+
+    if (internalCmd) {
+        return ['info', internalCmd];
+    } else {
+        try {
+            if ('CoffeeScript' in sandboxframe.contentWindow) {
+                cmd = sandboxframe.contentWindow.CoffeeScript.compile(cmd, {
+                    bare: true
+                });
+            }
+            rawoutput = sandboxframe.contentWindow.eval(cmd);
+            sandboxframe.contentWindow.$_ = rawoutput;
+        } catch (e) {
+            console.error(e);
+            rawoutput = e.message;
+            className = 'error';
+        }
+        return [className, clearConsole(stringifyContent(rawoutput))];
+    }
+}
+
+
+/**
+ * method to post the command to console and history
+ * @param {*} cmd 
+ * @param {*} blind 
+ * @param {*} response 
+ */
+let post = (cmd, blind, response) => {
+    cmd = trim(cmd);
+    var el = document.createElement('div');
+    var li = document.createElement('li');
+    var span = document.createElement('span');
+    var parent = output.parentNode;
+    if (blind === undefined) {
+        history.push(cmd);
+        setHistory(history);
+        if (historySupported) {
+            window.history.pushState(cmd, cmd, '?' + encodeURIComponent(cmd));
+        }
+    }
+    if (!remoteId || response) echo(cmd);
+    response = response || executeCommand(cmd);
+    if (response !== undefined) {
+        el.className = 'response';
+        span.innerHTML = response[1];
+        if (response[0] != 'info') prettyPrint([span]);
+        el.appendChild(span);
+        li.className = response[0];
+        li.innerHTML = '<span class="gutter"></span>';
+        li.appendChild(el);
+        appendLog(li);
+        output.parentNode.scrollTop = 0;
+        if (!body.className) {
+            exec.value = '';
+            if (enableCC) {
+                try {
+                    document.getElementsByTagName('a')[0].focus();
+                    cursor.focus();
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('delete', false, null);
+                } catch (e) {}
+            }
+        }
+    }
+    pos = history.length;
+}
