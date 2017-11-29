@@ -407,3 +407,112 @@ let internalCommand = (cmd) => {
 function noop() {}
 var ccCache = {};
 var ccPosition = false;
+
+/**
+ * method to print console command properties
+ * @param {*} cmd 
+ * @param {*} filter 
+ */
+let getProps = (cmd, filter) => {
+    var surpress = {},
+        props = [];
+
+    if (!ccCache[cmd]) {
+        try {
+            surpress.alert = sandboxframe.contentWindow.alert;
+            sandboxframe.contentWindow.alert = function() {};
+            ccCache[cmd] = sandboxframe.contentWindow.eval('console.props(' + cmd + ')').sort();
+            delete sandboxframe.contentWindow.alert;
+        } catch (e) {
+            ccCache[cmd] = [];
+        }
+        if (ccCache[cmd][0] == 'undefined') ccOptions[cmd] = [];
+        ccPosition = 0;
+        props = ccCache[cmd];
+    } else if (filter) {
+        for (var i = 0, p; i < ccCache[cmd].length, p = ccCache[cmd][i]; i++) {
+            if (p.indexOf(filter) === 0) {
+                if (p != filter) {
+                    props.push(p.substr(filter.length, p.length));
+                }
+            }
+        }
+    } else {
+        props = ccCache[cmd];
+    }
+
+    return props;
+}
+
+
+/**
+ * method to remove autocomplete
+ */
+let removeSuggestion = () => {
+    if (!enableCC) exec.setAttribute('rows', 1);
+    if (enableCC && cursor.nextSibling) cursor.parentNode.removeChild(cursor.nextSibling);
+}
+
+
+
+
+/**
+ * method to perform code autocomplete
+ * @param {*} event 
+ */
+let codeComplete = (event) => {
+    var cmd = cursor.textContent.split(/[;\s]+/g).pop(),
+        parts = cmd.split('.'),
+        which = whichKey(event),
+        cc,
+        props = [];
+
+    if (cmd) {
+        if (cmd.substr(-1) == '.') {
+            cmd = cmd.substr(0, cmd.length - 1);
+            props = getProps(cmd);
+        } else {
+            props = getProps(parts.slice(0, parts.length - 1).join('.') || 'window', parts[parts.length - 1]);
+        }
+        if (props.length) {
+            if (which == 9) {
+                if (props.length === 1) {
+                    ccPosition = false;
+                } else {
+                    if (event.shiftKey) {
+                        ccPosition = ccPosition == 0 ? props.length - 1 : ccPosition - 1;
+                    } else {
+                        ccPosition = ccPosition == props.length - 1 ? 0 : ccPosition + 1;
+                    }
+                }
+            } else {
+                ccPosition = 0;
+            }
+
+            if (ccPosition === false) {
+                completeCode();
+            } else {
+                if (!cursor.nextSibling) {
+                    cc = document.createElement('span');
+                    cc.className = 'suggest';
+                    exec.appendChild(cc);
+                }
+
+                cursor.nextSibling.innerHTML = props[ccPosition];
+                exec.value = exec.textContent;
+            }
+
+            if (which == 9) return false;
+        } else {
+            ccPosition = false;
+        }
+    } else {
+        ccPosition = false;
+    }
+
+    if (ccPosition === false && cursor.nextSibling) {
+        removeSuggestion();
+    }
+
+    exec.value = exec.textContent;
+}
