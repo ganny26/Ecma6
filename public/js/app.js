@@ -647,3 +647,44 @@ if (!injected) {
     body.appendChild(sandboxframe);
     sandboxframe.setAttribute('id', 'sandbox');
 }
+
+
+sandbox = sandboxframe.contentDocument || sandboxframe.contentWindow.document;
+
+
+/**
+ * method to identify key press events based on key code
+ * @param {*} event 
+ */
+let whichKey = (event) => {
+    var keys = {
+        38: 1,
+        40: 1,
+        Up: 38,
+        Down: 40,
+        Enter: 10,
+        'U+0009': 9,
+        'U+0008': 8,
+        'U+0190': 190,
+        'Right': 39,
+        'U+0028': 57,
+        'U+0026': 55
+    };
+    return event.which || event.keyCode || keys[event.keyIdentifier];
+}
+
+
+/**
+ * key press auto suggesstion
+ * @param {*} event 
+ */
+exec.onkeyup = function(event) {
+    var which = whichKey(event);
+
+    if (enableCC && which != 9 && which != 16) {
+        clearTimeout(codeCompleteTimer);
+        codeCompleteTimer = setTimeout(function() {
+            codeComplete(event);
+        }, 200);
+    }
+};
