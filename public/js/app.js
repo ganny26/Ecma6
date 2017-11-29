@@ -688,3 +688,36 @@ exec.onkeyup = function(event) {
         }, 200);
     }
 };
+
+
+/**
+ * method to set cursor
+ * @param {*} str 
+ */
+let setCursorTo = (str) => {
+    str = enableCC ? clearConsole(str) : str;
+    exec.value = str;
+
+    if (enableCC) {
+        document.execCommand('selectAll', false, null);
+        document.execCommand('delete', false, null);
+        document.execCommand('insertHTML', false, str);
+    } else {
+        var rows = str.match(/\n/g);
+        exec.setAttribute('rows', rows !== null ? rows.length + 1 : 1);
+    }
+    cursor.focus();
+    window.scrollTo(0, 0);
+}
+
+
+/**
+ * set cursor to text area
+ */
+if (enableCC) {
+    cursor.__onpaste = function(event) {
+        setTimeout(function() {
+            cursor.innerHTML = cursor.innerText;
+        }, 10);
+    };
+}
