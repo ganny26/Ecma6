@@ -1,15 +1,10 @@
 console.log('Loaded app js');
 ((window) => {
-    let historyButton = document.getElementById('btn_get_history');
 
-    historyButton.addEventListener('click', () => {
-        console.log('clicked');
-        run('@history');
-    })
 
 
     /**
-     * method to set history when commands entered in console
+     * method to set history when commands entered in console to local session
      * @param {*} history 
      */
 
@@ -23,7 +18,7 @@ console.log('Loaded app js');
 
 
     /**
-     * method to show history of console
+     * method to show history of console from session
      */
     let showHistory = () => {
         var h = getHistory();
