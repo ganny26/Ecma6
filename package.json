@@ -5,10 +5,14 @@
   "main": "index.js",
   "author": "selvaganeshrajam@gmail.com",
   "license": "MIT",
+  "engines": {
+     "node" : "6.9"  
+  },
   "scripts": {
-    "start": "node src/index.js",
-    "build":"babel ./public/js -d ./public/dist",
-    "dev":"babel-node ./src"
+    "start": "babel-node src/index.js",
+    "build": "babel ./public/js -d ./public/dist",
+    "dev": "babel-node ./src",
+    "webpack-build":"webpack"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -16,6 +20,8 @@
     "babel-preset-env": "^1.6.1",
     "body-parser": "^1.18.2",
     "eslint": "^4.12.0",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "webpack": "^3.8.1",
+    "imports-loader": "^0.7.1"
   }
 }
