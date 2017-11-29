@@ -1,66 +1,265 @@
-/** body tag css*/
-
-body.large #console {
-  top: 0;
-  padding-top: 0;
-  bottom: 0;
-  margin-bottom: 0;
-  right: 40%;
-  width: auto;
-  position: absolute;
+.console-container {
+    margin-top: 24px
 }
-body.large form {
-  right: 0;
-  width: 40%;
-  bottom: 0;
-  background: none;
-  border: 0;
-  padding: 0;
-}
-body.large #exec {
-  position: absolute;
-  width: 100%;
-  padding: 0;
-  border-bottom: 0;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  z-index: 10;
-  background: #E6E8F2;
-  color: #000;
-  -webkit-box-shadow: none;
-  border-left: 1px solid #AAABB8;
-  left: auto;
-}
-body.large #cursor {
-  padding: 5px;
-}
-
-.console-container{
-  margin-top: 24px;
-}
-
 html {
-  height: 100%;
-  background: #fff;
+    height: 100%;
+    background: #fff
 }
 body {
- 
-  width: 100%;
-
+    width: 100%
 }
-
-/** text area console css**/
-input,textarea {
-  margin: 0;
-  padding: 0;
-  position: relative;
-  font-size: 18px;
-  width: 100%;
-  -webkit-appearance: none;
+input,
+textarea {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    font-size: 18px;
+    width: 100%;
+    -webkit-appearance: none
 }
-
-
 input {
-  padding: 2px;
+    padding: 2px
+}
+#console {
+    bottom: 35px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin-bottom: 35px;
+    overflow: auto
+}
+#output {
+    list-style: none
+}
+#output li {
+    margin: 5px 0;
+    padding: 5px;
+    white-space: pre-wrap
+}
+#output li:last-child {
+    border-bottom: 0
+}
+#output>li>div {
+    margin-left: 20px;
+    line-height: 20px
+}
+#console span.gutter {
+    float: left;
+    display: block;
+    width: 5px
+}
+#output li div {
+    position: relative
+}
+#output .echo .permalink {
+    position: absolute;
+    right: 0;
+    overflow: hidden;
+    height: 20px;
+    width: 18px;
+    text-indent: -200px;
+    top: 0;
+    opacity: .2;
+    background-size: contain
+}
+#output .echo:hover .permalink {
+    display: block
+}
+#output .echo .permalink:hover {
+    opacity: 1
+}
+#output span.gutter:before {
+    position: absolute
+}
+#output .echo span.gutter:before {
+    content: '';
+    color: #3583FC;
+    font-size: 18px;
+    font-weight: 700;
+    background-size: contain;
+    width: 16px;
+    height: 20px;
+    scale: .75;
+    background-position: 50% 50%
+}
+#output .info span.gutter:before {
+    content: '';
+    color: #27A700;
+    font-size: 18px;
+    font-weight: 700;
+    height: 20px;
+    width: 16px;
+    background-size: contain;
+    background-position: 50%
+}
+#output .error span.gutter:before {
+    content: ' ';
+    color: #E81D20;
+    font-size: 28px;
+    font-weight: 700;
+    margin-right: -10px;
+    line-height: 24px;
+    background-size: contain;
+    height: 19px;
+    background-position: 50%
+}
+#output .response span.gutter:before {
+    content: '';
+    color: #BDC3CD;
+    font-size: 18px;
+    font-weight: 400;
+    margin-right: -10px;
+    line-height: 18px;
+    height: 19px;
+    width: 16px;
+    background-size: contain;
+    scale: .75
+}
+#output li.echo + li.response {
+    border-width: 0
+}
+#output li.response + li.echo {
+    border-width: 2px;
+    border-color: #DFDFDF
+}
+#output li.error + li.echo {
+    border-width: 2px;
+    border-color: #DFDFDF
+}
+#output li.log + li.echo {
+    border-width: 2px;
+    border-color: #DFDFDF
+}
+#output li.info + li.echo {
+    border-width: 2px;
+    border-color: #DFDFDF
+}
+#output li.echo:first-child {
+    border-width: 0
+}
+#output li:first-child {
+    border-width: 0;
+    padding-top: 0
+}
+iframe {
+    display: none
+}
+#exec,
+.fakeInput {
+    resize: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    border: 0;
+    outline: 0;
+    border: 1px solid #AAABB8;
+    color: #000;
+    height: 24px;
+    line-height: 24px;
+    overflow: hidden
+}
+#console {
+    padding-top: 35px
+}
+#exec,
+.fakeInput {
+    position: relative;
+    height: auto
+}
+#output li,
+#exec,
+.fakeInput {
+    min-height: 10px;
+    font-size: 15px
+}
+#cursor {
+    display: inline-block;
+    height: 24px;
+    min-width: 1px;
+    outline: 0;
+    top: 0;
+    left: 0;
+    z-index: 999
+}
+#cursor {
+    height: auto;
+    white-space: pre-wrap
+}
+#exec,
+.fakeInput {
+    cursor: text
+}
+#exec .suggest {
+    color: #999
+}
+body.large #console {
+    top: 0;
+    padding-top: 0;
+    bottom: 0;
+    margin-bottom: 0;
+    right: 40%;
+    width: auto;
+    position: absolute
+}
+body.large form {
+    right: 0;
+    width: 40%;
+    bottom: 0;
+    background: none;
+    border: 0;
+    padding: 0
+}
+body.large #exec {
+    position: absolute;
+    width: 100%;
+    padding: 0;
+    border-bottom: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    z-index: 10;
+    background: #E6E8F2;
+    color: #000;
+    -webkit-box-shadow: none;
+    border-left: 1px solid #AAABB8;
+    left: auto
+}
+body.large #cursor {
+    padding: 5px
+}
+.str {
+    color: #080
+}
+.kwd {
+    color: #008
+}
+.com {
+    color: #800
+}
+.typ {
+    color: #606
+}
+.lit {
+    color: #066
+}
+.pun {
+    color: #660
+}
+.pln {
+    color: #000
+}
+.tag {
+    color: #008
+}
+.atn {
+    color: #606
+}
+.atv {
+    color: #080
+}
+.dec {
+    color: #606
+}
+.error span {
+    color: #E81D20
 }
