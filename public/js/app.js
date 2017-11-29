@@ -1,237 +1,22 @@
-console.log('Loaded app js');
+import Utils from './Utils';
+import HistoryUtils from './HistoryUtils';
+import LoggingUtil from './LoggingUtils';
+import StringifyUtils from './StringifyUtils';
+import TabKeyPress from './TabKeyPress';
+
+
 ((window) => {
-    let historyButton = document.getElementById('btn_get_history');
-
-    historyButton.addEventListener('click', () => {
-        console.log('clicked');
-        run('@history');
-    })
-
-
-    /**
-     * method to set history when commands entered in console
-     * @param {*} history 
-     */
-
-    let setHistory = (history) => {
-        if (typeof JSON == 'undefined') return;
-
-        try {
-            sessionStorage.setItem('history', JSON.stringifyContent(history));
-        } catch (e) {}
-    }
-
-
-    /**
-     * method to show history of console
-     */
-    let showHistory = () => {
-        var h = getHistory();
-        h.shift();
-        return h.join("\n");
-    }
-
-
-    /**
-     * method to get history of console from browser session
-     */
-    let getHistory = () => {
-        var history = [''];
-        if (typeof JSON == 'undefined') return history;
-        try {
-            history = JSON.parse(sessionStorage.getItem('history') || '[""]');
-        } catch (e) {}
-        return history;
-    }
-
-
-    /**
-     * method to watch browser
-     * @param {*} o 
-     * @param {*} simple 
-     * @param {*} visited 
-     */
-    let stringifyContent = (o, simple, visited) => {
-        var json = '',
-            i, vi, type = '',
-            parts = [],
-            names = [],
-            circular = false;
-        visited = visited || [];
-        try {
-            type = ({}).toString.call(o);
-        } catch (e) {
-            type = '[object Object]';
-        }
-
-
-        for (vi = 0; vi < visited.length; vi++) {
-            if (o === visited[vi]) {
-                circular = true;
-                break;
-            }
-        }
-
-        if (circular) {
-            json = '[circular]';
-        } else if (type == '[object String]') {
-            json = '"' + o.replace(/"/g, '\\"') + '"';
-        } else if (type == '[object Array]') {
-            visited.push(o);
-
-            json = '[';
-            for (i = 0; i < o.length; i++) {
-                parts.push(stringifyContent(o[i], simple, visited));
-            }
-            json += parts.join(', ') + ']';
-            json;
-        } else if (type == '[object Object]') {
-            visited.push(o);
-
-            json = '{';
-            for (i in o) {
-                names.push(i);
-            }
-            names.sort(sortData);
-            for (i = 0; i < names.length; i++) {
-                parts.push(stringifyContent(names[i], undefined, visited) + ': ' + stringifyContent(o[names[i]], simple, visited));
-            }
-            json += parts.join(', ') + '}';
-        } else if (type == '[object Number]') {
-            json = o + '';
-        } else if (type == '[object Boolean]') {
-            json = o ? 'true' : 'false';
-        } else if (type == '[object Function]') {
-            json = o.toString();
-        } else if (o === null) {
-            json = 'null';
-        } else if (o === undefined) {
-            json = 'undefined';
-        } else if (simple == undefined) {
-            visited.push(o);
-
-            json = type + '{\n';
-            for (i in o) {
-                names.push(i);
-            }
-            names.sort(sortData);
-            for (i = 0; i < names.length; i++) {
-                try {
-                    parts.push(names[i] + ': ' + stringifyContent(o[names[i]], true, visited));
-                } catch (e) {
-                    if (e.name == 'NS_ERROR_NOT_IMPLEMENTED') {
-
-                    }
-                }
-            }
-            json += parts.join(',\n') + '\n}';
-        } else {
-            try {
-                json = o + '';
-            } catch (e) {}
-        }
-        return json;
-    }
-
-
-    /**
-     * method to sort data
-     * @param {*} a 
-     * @param {*} b 
-     */
-    let sortData = (a, b) => {
-        return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
-    }
-
-
-
-    /**
-     * method to clean the console
-     * @param {*} s 
-     */
-    let clearConsole = (s) => {
-        s = s instanceof Array ? s.join(', ') : s;
-        return (s || '').replace(/[<&]/g, function(m) {
-            return {
-                '&': '&amp;',
-                '<': '&lt;'
-            }[m];
-        });
-    }
-
-
-    /**
-     * method to log console result/error to right side
-     * @param {*} msg 
-     * @param {*} className 
-     */
-    let log = (msg, className) => {
-        var li = document.createElement('li');
-        var div = document.createElement('div');
-        div.innerHTML = typeof msg === 'string' ? clearConsole(msg) : msg;
-        prettyPrint([div]);
-        li.className = className || 'log';
-        li.appendChild(div);
-        appendLog(li);
-    }
-
-
-
-    /**
-     * method to print that text which entered to right side
-     * @param {*} cmd 
-     */
-    let echo = (cmd) => {
-        var li = document.createElement('li');
-        li.className = 'echo';
-        li.innerHTML = clearConsole(cmd) + '<a href="/?' + encodeURIComponent(cmd) + '" class="permalink" title="permalink">link</a></div>';
-        logAfter = null;
-        if (output.querySelector) {
-            logAfter = output.querySelector('li.echo') || null;
-        } else {
-            var lis = document.getElementsByTagName('li'),
-                len = lis.length,
-                i;
-            for (i = 0; i < len; i++) {
-                if (lis[i].className.indexOf('echo') !== -1) {
-                    logAfter = lis[i];
-                    break;
-                }
-            }
-        }
-        appendLog(li, true);
-    }
-
-
+    console.log('Loaded app js');
     /**
      * access info object at window level
      * @param {*} cmd 
      */
-    window.info = function(cmd) {
+    window.info = function (cmd) {
         var li = document.createElement('li');
         li.className = 'info';
-        li.innerHTML = '<span class="gutter"></span><div>' + clearConsole(cmd) + '</div>';
-        appendLog(li);
+        li.innerHTML = '<span class="gutter"></span><div>' + Utils.clearConsole(cmd) + '</div>';
+        Utils.appendLog(li);
     }
-
-
-    /**
-     * method to append logs to right side
-     * @param {*} el 
-     * @param {*} echo 
-     */
-    let appendLog = (el, echo) => {
-        if (echo) {
-            if (!output.firstChild) {
-                output.appendChild(el);
-            } else {
-                output.insertBefore(el, output.firstChild);
-            }
-        } else {
-            output.insertBefore(el, logAfter ? logAfter : output.lastChild.nextSibling);
-        }
-    }
-
 
     /**
      * method to executeCommand the remote commands from text ares
@@ -241,7 +26,7 @@ console.log('Loaded app js');
         console.log('command', cmd);
         var rawoutput = null,
             className = 'response',
-            internalCmd = internalCommand(cmd);
+            internalCmd = Utils.internalCommand(cmd);
 
         if (internalCmd) {
             return ['info', internalCmd];
@@ -259,31 +44,30 @@ console.log('Loaded app js');
                 rawoutput = e.message;
                 className = 'error';
             }
-            return [className, clearConsole(stringifyContent(rawoutput))];
+            return [className, Utils.clearConsole(StringifyUtils.stringifyContent(rawoutput))];
         }
     }
 
-
     /**
-     * method to post the command to console and history
-     * @param {*} cmd 
-     * @param {*} blind 
-     * @param {*} response 
-     */
+  * method to post the command to console and history
+  * @param {*} cmd 
+  * @param {*} blind 
+  * @param {*} response 
+  */
     let post = (cmd, blind, response) => {
-        cmd = trim(cmd);
+        cmd = Utils.trim(cmd);
         var el = document.createElement('div');
         var li = document.createElement('li');
         var span = document.createElement('span');
         var parent = output.parentNode;
         if (blind === undefined) {
             history.push(cmd);
-            setHistory(history);
+            HistoryUtils.setHistory(history);
             if (historySupported) {
                 window.history.pushState(cmd, cmd, '?' + encodeURIComponent(cmd));
             }
         }
-        if (!remoteId || response) echo(cmd);
+        if (!remoteId || response) LoggingUtils.echo(cmd);
         response = response || executeCommand(cmd);
         if (response !== undefined) {
             el.className = 'response';
@@ -293,7 +77,7 @@ console.log('Loaded app js');
             li.className = response[0];
             li.innerHTML = '<span class="gutter"></span>';
             li.appendChild(el);
-            appendLog(li);
+            Utils.appendLog(li);
             output.parentNode.scrollTop = 0;
             if (!body.className) {
                 exec.value = '';
@@ -303,116 +87,24 @@ console.log('Loaded app js');
                         cursor.focus();
                         document.execCommand('selectAll', false, null);
                         document.execCommand('delete', false, null);
-                    } catch (e) {}
+                    } catch (e) {
+                        console.log('error in posting data')
+                    }
                 }
             }
         }
         pos = history.length;
     }
 
-
-    /**
-     * method to identify tab spacing based on key code
-     * @param {*} evt 
-     */
-    let checkTab = (evt) => {
-        var t = evt.target,
-            ss = t.selectionStart,
-            se = t.selectionEnd,
-            tab = "  ";
-        if (evt.keyCode == 9) {
-            evt.preventDefault();
-            if (ss != se && t.value.slice(ss, se).indexOf("\n") != -1) {
-                var pre = t.value.slice(0, ss);
-                var sel = t.value.slice(ss, se).replace(/\n/g, "\n" + tab);
-                var post = t.value.slice(se, t.value.length);
-                t.value = pre.concat(tab).concat(sel).concat(post);
-
-                t.selectionStart = ss + tab.length;
-                t.selectionEnd = se + tab.length;
-            } else {
-                t.value = t.value.slice(0, ss).concat(tab).concat(t.value.slice(ss, t.value.length));
-                if (ss == se) {
-                    t.selectionStart = t.selectionEnd = ss + tab.length;
-                } else {
-                    t.selectionStart = ss + tab.length;
-                    t.selectionEnd = se + tab.length;
-                }
-            }
-        } else if (evt.keyCode == 8 && t.value.slice(ss - 4, ss) == tab) {
-            evt.preventDefault();
-            t.value = t.value.slice(0, ss - 4).concat(t.value.slice(ss, t.value.length));
-            t.selectionStart = t.selectionEnd = ss - tab.length;
-        } else if (evt.keyCode == 46 && t.value.slice(se, se + 4) == tab) {
-            evt.preventDefault();
-            t.value = t.value.slice(0, ss).concat(t.value.slice(ss + 4, t.value.length));
-            t.selectionStart = t.selectionEnd = ss;
-        } else if (evt.keyCode == 37 && t.value.slice(ss - 4, ss) == tab) {
-            evt.preventDefault();
-            t.selectionStart = t.selectionEnd = ss - 4;
-        } else if (evt.keyCode == 39 && t.value.slice(ss, ss + 4) == tab) {
-            evt.preventDefault();
-            t.selectionStart = t.selectionEnd = ss + 4;
-        }
-    }
-
-
-    /**
-     * method to trim white spaces
-     * @param {*} s 
-     */
-    let trim = (s) => {
-        return (s || "").replace(/^\s+|\s+$/g, "");
-    }
-
-    /**
-     * method to provide shift+enter feature
-     * @param {*} event 
-     */
-    let changeView = (event) => {
-        if (false && enableCC) return;
-        var which = event.which || event.keyCode;
-        if (which == 38 && event.shiftKey == true) {
-            body.className = '';
-            cursor.focus();
-            try {
-                localStorage.large = 0;
-            } catch (e) {}
-            return false;
-        } else if (which == 40 && event.shiftKey == true) {
-            body.className = 'large';
-            try {
-                localStorage.large = 1;
-            } catch (e) {}
-            cursor.focus();
-            return false;
-        }
-    }
-
-
-    /**
-     * method to split executeCommand command by shorcut by '@' symbol
-     * @param {*} cmd 
-     */
-    let internalCommand = (cmd) => {
-        var parts = [],
-            c;
-        if (cmd.substr(0, 1) == '@') {
-            parts = cmd.substr(1).split(' ');
-            c = parts.shift();
-            return (commands[c] || noop).apply(this, parts);
-        }
-    }
-
-    function noop() {}
+    function noop() { }
     var ccCache = {};
     var ccPosition = false;
 
     /**
-     * method to print console command properties
-     * @param {*} cmd 
-     * @param {*} filter 
-     */
+    * method to print console command properties
+    * @param {*} cmd 
+    * @param {*} filter 
+    */
     let getProps = (cmd, filter) => {
         var surpress = {},
             props = [];
@@ -420,7 +112,7 @@ console.log('Loaded app js');
         if (!ccCache[cmd]) {
             try {
                 surpress.alert = sandboxframe.contentWindow.alert;
-                sandboxframe.contentWindow.alert = function() {};
+                sandboxframe.contentWindow.alert = function () { };
                 ccCache[cmd] = sandboxframe.contentWindow.eval('console.props(' + cmd + ')').sort();
                 delete sandboxframe.contentWindow.alert;
             } catch (e) {
@@ -444,22 +136,18 @@ console.log('Loaded app js');
         return props;
     }
 
-
     /**
-     * method to remove autocomplete
-     */
+    * method to remove autocomplete
+    */
     let removeSuggestion = () => {
         if (!enableCC) exec.setAttribute('rows', 1);
         if (enableCC && cursor.nextSibling) cursor.parentNode.removeChild(cursor.nextSibling);
     }
 
-
-
-
     /**
-     * method to perform code autocomplete
-     * @param {*} event 
-     */
+  * method to perform code autocomplete
+  * @param {*} event 
+  */
     let codeComplete = (event) => {
         var cmd = cursor.textContent.split(/[;\s]+/g).pop(),
             parts = cmd.split('.'),
@@ -518,48 +206,48 @@ console.log('Loaded app js');
     }
 
 
+
     /**
      * print all logs based on properties
      */
     window._console = {
-        log: function() {
+        log: function () {
             var l = arguments.length,
                 i = 0;
             for (; i < l; i++) {
                 log(stringifyContent(arguments[i], true));
             }
         },
-        dir: function() {
+        dir: function () {
             var l = arguments.length,
                 i = 0;
             for (; i < l; i++) {
                 log(stringifyContent(arguments[i]));
             }
         },
-        props: function(obj) {
+        props: function (obj) {
             var props = [],
                 realObj;
             try {
                 for (var p in obj) props.push(p);
-            } catch (e) {}
+            } catch (e) { }
             return props;
         }
     };
-
 
     /**
      * event listener for command messages
      */
     document.addEventListener ?
         console.log('stared to get commands from console') :
-        window.attachEvent('onmessage', function() {
+        window.attachEvent('onmessage', function () {
             post(window.event.data);
         });
 
 
     /**
-     * method to execute command shell
-     */
+  * method to execute command shell
+  */
     var exec = document.getElementById('exec'),
         form = exec.form || {},
         output = document.getElementById('output'),
@@ -568,7 +256,7 @@ console.log('Loaded app js');
         sandboxframe = injected ? window.top['selva_c'] : document.createElement('iframe'),
         sandbox = null,
         fakeConsole = 'window.top._console',
-        history = getHistory(),
+        history = HistoryUtils.getHistory(),
         liveHistory = (window.history.pushState !== undefined),
         pos = 0,
         remoteId = null,
@@ -580,7 +268,7 @@ console.log('Loaded app js');
         commands = {
             history: showHistory,
             clear: () => {
-                setTimeout(function() {
+                setTimeout(function () {
                     output.innerHTML = '';
                 }, 10);
                 return 'clear';
@@ -607,13 +295,13 @@ console.log('Loaded app js');
 
     if (enableCC) {
         exec.parentNode.innerHTML = '<div autofocus id="exec" autocapitalize="off" spellcheck="false">\
-    <span id="cursor" spellcheck="false" autocapitalize="off" autocorrect="off"  contenteditable>\
-    </span></div>';
+        <span id="cursor" spellcheck="false" autocapitalize="off" autocorrect="off"  contenteditable>\
+        </span></div>';
         exec = document.getElementById('exec');
         cursor = document.getElementById('cursor');
     }
 
-  /**
+    /**
      * adding script to console
      */
     if (!injected) {
@@ -624,10 +312,9 @@ console.log('Loaded app js');
 
     sandbox = sandboxframe.contentDocument || sandboxframe.contentWindow.document;
 
-
     /**
-     * adding script to console
-     */
+         * adding script to console
+         */
     if (!injected) {
         sandbox.open();
         sandbox.write('<script>var copy = window.top.copy; (function () { var fakeConsole = ' + fakeConsole + '; if (console != undefined) { for (var k in fakeConsole) { console[k] = fakeConsole[k]; } } else { console = fakeConsole; } })();</script>');
@@ -635,7 +322,6 @@ console.log('Loaded app js');
     } else {
         sandboxframe.contentWindow.eval('copy = window.top.copy; (function () { var fakeConsole = ' + fakeConsole + '; if (console != undefined) { for (var k in fakeConsole) { console[k] = fakeConsole[k]; } } else { console = fakeConsole; } })();');
     }
-
 
     cursor.focus();
     output.parentNode.tabIndex = 0;
@@ -652,40 +338,17 @@ console.log('Loaded app js');
         exec.parentNode.appendChild(fakeInput);
     }
 
-  
-
-    /**
-     * method to identify key press events based on key code
-     * @param {*} event 
-     */
-    let whichKey = (event) => {
-        var keys = {
-            38: 1,
-            40: 1,
-            Up: 38,
-            Down: 40,
-            Enter: 10,
-            'U+0009': 9,
-            'U+0008': 8,
-            'U+0190': 190,
-            'Right': 39,
-            'U+0028': 57,
-            'U+0026': 55
-        };
-        return event.which || event.keyCode || keys[event.keyIdentifier];
-    }
-
 
     /**
      * key press auto suggesstion
      * @param {*} event 
      */
-    exec.onkeyup = function(event) {
-        var which = whichKey(event);
+    exec.onkeyup = function (event) {
+        var which = LoggingUtils.whichKey(event);
 
         if (enableCC && which != 9 && which != 16) {
             clearTimeout(codeCompleteTimer);
-            codeCompleteTimer = setTimeout(function() {
+            codeCompleteTimer = setTimeout(function () {
                 codeComplete(event);
             }, 200);
         }
@@ -693,40 +356,19 @@ console.log('Loaded app js');
 
 
     /**
-     * method to set cursor
-     * @param {*} str 
-     */
-    let setCursorTo = (str) => {
-        str = enableCC ? clearConsole(str) : str;
-        exec.value = str;
-
-        if (enableCC) {
-            document.execCommand('selectAll', false, null);
-            document.execCommand('delete', false, null);
-            document.execCommand('insertHTML', false, str);
-        } else {
-            var rows = str.match(/\n/g);
-            exec.setAttribute('rows', rows !== null ? rows.length + 1 : 1);
-        }
-        cursor.focus();
-        window.scrollTo(0, 0);
-    }
-
-
-    /**
-     * set cursor to text area
-     */
+    * set cursor to text area
+    */
     if (enableCC) {
-        cursor.__onpaste = function(event) {
-            setTimeout(function() {
+        cursor.__onpaste = function (event) {
+            setTimeout(function () {
                 cursor.innerHTML = cursor.innerText;
             }, 10);
         };
     }
 
     /**
-     * get browser cache from window
-     */
+    * get browser cache from window
+    */
     getProps('window');
 
     try {
@@ -740,15 +382,14 @@ console.log('Loaded app js');
     /**
      * initiate cursor focus on load
      */
-    if (document.addEventListener) document.addEventListener('deviceready', function() {
+    if (document.addEventListener) document.addEventListener('deviceready', function () {
         cursor.focus();
     }, false);
 
-
     /**
-     * range
-     * @param {*} focus 
-     */
+* range
+* @param {*} focus 
+*/
     function completeCode(focus) {
         var tmp = exec.textContent,
             l = tmp.length;
@@ -777,45 +418,28 @@ console.log('Loaded app js');
     }
 
     /**
-     * method to return node of DOM
-     * @param {*} list 
-     * @param {*} node 
-     */
-    function findNode(list, node) {
-        var pos = 0;
-        for (var i = 0; i < list.length; i++) {
-            if (list[i] == node) {
-                return pos;
-            }
-            pos += list[i].nodeValue.length;
-        }
-        return -1;
-    }
-
-
-    /**
-     * method to identify key down events
-     * @param {*} event 
-     */
-    exec.onkeydown = function(event) {
+   * method to identify key down events
+   * @param {*} event 
+   */
+    exec.onkeydown = function (event) {
         event = event || window.event;
         var keys = {
-                38: 1,
-                40: 1
-            },
+            38: 1,
+            40: 1
+        },
             wide = body.className == 'large',
-            which = whichKey(event);
+            which = LoggingUtils.whichKey(event);
 
         if (typeof which == 'string') which = which.replace(/\/U\+/, '\\u');
         if (keys[which]) {
             if (event.shiftKey) {
-                changeView(event);
+                TabKeyPress.changeView(event);
             } else if (!wide) { // history cycle
                 if (enableCC && window.getSelection) {
                     window.selObj = window.getSelection();
                     var selRange = selObj.getRangeAt(0);
 
-                    cursorPos = findNode(selObj.anchorNode.parentNode.childNodes, selObj.anchorNode) + selObj.anchorOffset;
+                    cursorPos = Utils.findNode(selObj.anchorNode.parentNode.childNodes, selObj.anchorNode) + selObj.anchorOffset;
                     var value = exec.value,
                         firstnl = value.indexOf('\n'),
                         lastnl = value.lastIndexOf('\n');
@@ -838,11 +462,11 @@ console.log('Loaded app js');
                 }
                 if (history[pos] != undefined && history[pos] !== '') {
                     removeSuggestion();
-                    setCursorTo(history[pos])
+                    Utils.setCursorTo(history[pos])
                     return false;
                 } else if (pos == history.length) {
                     removeSuggestion();
-                    setCursorTo('');
+                    Utils.setCursorTo('');
                     return false;
                 }
             }
@@ -859,7 +483,7 @@ console.log('Loaded app js');
             rows = rows != null ? rows.length + 2 : 2;
             exec.setAttribute('rows', rows);
         } else if (which == 9 && wide) {
-            checkTab(event);
+            TabKeyPress.checkTab(event);
         } else if (event.shiftKey && event.metaKey && which == 8) {
             output.innerHTML = '';
         } else if ((which == 39 || which == 35) && ccPosition !== false) { // complete code
@@ -878,12 +502,12 @@ console.log('Loaded app js');
 
 
     /**
-     * method to handle auto complete based on key press
-     */
+   * method to handle auto complete based on key press
+   */
     if (enableCC && iOSMobile) {
-        fakeInput.onkeydown = function(event) {
+        fakeInput.onkeydown = function (event) {
             removeSuggestion();
-            var which = whichKey(event);
+            var which = LoggingUtils.whichKey(event);
 
             if (which == 13 || which == 10) {
                 post(this.value);
@@ -897,12 +521,12 @@ console.log('Loaded app js');
          * 
          * @param {*} event 
          */
-        fakeInput.onkeyup = function(event) {
-            cursor.innerHTML = clearConsole(this.value);
-            var which = whichKey(event);
+        fakeInput.onkeyup = function (event) {
+            cursor.innerHTML = Utils.clearConsole(this.value);
+            var which = LoggingUtils.whichKey(event);
             if (enableCC && which != 9 && which != 16) {
                 clearTimeout(codeCompleteTimer);
-                codeCompleteTimer = setTimeout(function() {
+                codeCompleteTimer = setTimeout(function () {
                     codeComplete(event);
                 }, 200);
             }
@@ -912,38 +536,12 @@ console.log('Loaded app js');
         var dblTapTimer = null,
             taps = 0;
 
-        /**remove */
-        form.addEventListener('touchstart', function(event) {
-            if (ccPosition !== false) {
-                event.preventDefault();
-                clearTimeout(dblTapTimer);
-                taps++;
-
-                if (taps === 2) {
-                    completeCode();
-                    fakeInput.value = cursor.textContent;
-                    removeSuggestion();
-                    fakeInput.focus();
-                } else {
-                    dblTapTimer = setTimeout(function() {
-                        taps = 0;
-                        codeComplete({
-                            which: 9
-                        });
-                    }, 200);
-                }
-            }
-
-            return false;
-        });
     }
 
-
-
     /**
-     * key down event
-     * @param {*} event 
-     */
+   * key down event
+   * @param {*} event 
+   */
     document.onkeydown = (event) => {
         event = event || window.event;
         var which = event.which || event.keyCode;
@@ -954,9 +552,9 @@ console.log('Loaded app js');
         } else if (event.target == output.parentNode && which == 32) {
             output.parentNode.scrollTop += 5 + output.parentNode.offsetHeight * (event.shiftKey ? -1 : 1);
         }
-        return changeView(event);
+        return TabKeyPress.changeView(event);
     };
-    exec.onclick = function() {
+    exec.onclick = function () {
         cursor.focus();
     }
 
