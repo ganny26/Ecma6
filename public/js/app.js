@@ -571,6 +571,7 @@ var exec = document.getElementById('exec'),
     history = getHistory(),
     liveHistory = (window.history.pushState !== undefined),
     pos = 0,
+    remoteId = null,
     body = document.getElementsByTagName('body')[0],
     logAfter = null,
     historySupported = !!(window.history && window.history.pushState),
@@ -721,3 +722,23 @@ if (enableCC) {
         }, 10);
     };
 }
+
+/**
+ * get browser cache from window
+ */
+getProps('window');
+
+try {
+    if (!!(localStorage.large * 1)) {
+        document.body.className = 'large';
+    }
+} catch (e) {
+    console.log('failed to store command');
+}
+
+/**
+ * initiate cursor focus on load
+ */
+if (document.addEventListener) document.addEventListener('deviceready', function() {
+    cursor.focus();
+}, false);
