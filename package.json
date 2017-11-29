@@ -10,9 +10,8 @@
   },
   "scripts": {
     "start": "babel-node src/index.js",
-    "build": "babel ./public/js -d ./public/dist",
-    "dev": "babel-node ./src",
-    "webpack-build":"webpack"
+    "build": "webpack",
+    "dev": "babel-node ./src"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",

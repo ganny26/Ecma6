@@ -19,8 +19,9 @@ $ yarn start
 ```
 
 ### Tech
-* Native Java Script
+* Native JavaScript
 * ESLint - to identify lint errors
+* Webpack - to bundle module code 
 * Babel - for transpiling 
 * Pretty JS - for syntax highlighting 
 
