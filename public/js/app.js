@@ -516,3 +516,134 @@ let codeComplete = (event) => {
 
     exec.value = exec.textContent;
 }
+
+
+/**
+ * print all logs based on properties
+ */
+window._console = {
+    log: function() {
+        var l = arguments.length,
+            i = 0;
+        for (; i < l; i++) {
+            log(stringifyContent(arguments[i], true));
+        }
+    },
+    dir: function() {
+        var l = arguments.length,
+            i = 0;
+        for (; i < l; i++) {
+            log(stringifyContent(arguments[i]));
+        }
+    },
+    props: function(obj) {
+        var props = [],
+            realObj;
+        try {
+            for (var p in obj) props.push(p);
+        } catch (e) {}
+        return props;
+    }
+};
+
+
+/**
+ * event listener for command messages
+ */
+document.addEventListener ?
+    console.log('stared to get commands from console') :
+    window.attachEvent('onmessage', function() {
+        post(window.event.data);
+    });
+
+
+/**
+ * method to execute command shell
+ */
+var exec = document.getElementById('exec'),
+    form = exec.form || {},
+    output = document.getElementById('output'),
+    cursor = document.getElementById('exec'),
+    injected = typeof window.top['selva_c'] !== 'undefined',
+    sandboxframe = injected ? window.top['selva_c'] : document.createElement('iframe'),
+    sandbox = null,
+    fakeConsole = 'window.top._console',
+    history = getHistory(),
+    liveHistory = (window.history.pushState !== undefined),
+    pos = 0,
+    body = document.getElementsByTagName('body')[0],
+    logAfter = null,
+    historySupported = !!(window.history && window.history.pushState),
+    codeCompleteTimer = null,
+    keypressTimer = null,
+    commands = {
+        history: showHistory,
+        clear: () => {
+            setTimeout(function() {
+                output.innerHTML = '';
+            }, 10);
+            return 'clear';
+        },
+        close: () => {
+            if (injected) {
+                selva_c.console.style.display = 'none';
+                return 'hidden';
+            } else {
+                return 'noop';
+            }
+        },
+        listen: (id) => {
+            var script = document.createElement('script'),
+                callback = '_cb' + +new Date;
+            script.src = '/api/' + (id || '') + '?callback=' + callback;
+            body.appendChild(script);
+            return 'working';
+        }
+    },
+    fakeInput = null,
+    iOSMobile = false,
+    enableCC = true;
+
+if (enableCC) {
+    exec.parentNode.innerHTML = '<div autofocus id="exec" autocapitalize="off" spellcheck="false">\
+    <span id="cursor" spellcheck="false" autocapitalize="off" autocorrect="off"  contenteditable>\
+    </span></div>';
+    exec = document.getElementById('exec');
+    cursor = document.getElementById('cursor');
+}
+
+
+/**
+ * adding script to console
+ */
+if (!injected) {
+    sandbox.open();
+    sandbox.write('<script>var copy = window.top.copy; (function () { var fakeConsole = ' + fakeConsole + '; if (console != undefined) { for (var k in fakeConsole) { console[k] = fakeConsole[k]; } } else { console = fakeConsole; } })();</script>');
+    sandbox.close();
+} else {
+    sandboxframe.contentWindow.eval('copy = window.top.copy; (function () { var fakeConsole = ' + fakeConsole + '; if (console != undefined) { for (var k in fakeConsole) { console[k] = fakeConsole[k]; } } else { console = fakeConsole; } })();');
+}
+
+
+cursor.focus();
+output.parentNode.tabIndex = 0;
+
+/**
+ * dynamically identify input and set attribute to console text area
+ */
+if (enableCC && iOSMobile) {
+    fakeInput = document.createElement('input');
+    fakeInput.className = 'fakeInput';
+    fakeInput.setAttribute('spellcheck', 'false');
+    fakeInput.setAttribute('autocorrect', 'off');
+    fakeInput.setAttribute('autocapitalize', 'off');
+    exec.parentNode.appendChild(fakeInput);
+}
+
+/**
+ * adding script to console
+ */
+if (!injected) {
+    body.appendChild(sandboxframe);
+    sandboxframe.setAttribute('id', 'sandbox');
+}
