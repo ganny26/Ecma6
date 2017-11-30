@@ -14,7 +14,7 @@ import TabKeyPress from './TabKeyPress';
     window.info = function (cmd) {
         var li = document.createElement('li');
         li.className = 'info';
-        li.innerHTML = '<span class="gutter"></span><div>' + Utils.clearConsole(cmd) + '</div>';
+        li.innerHTML = '<span></span><div>' + Utils.clearConsole(cmd) + '</div>';
         Utils.appendLog(li);
     }
 
@@ -75,7 +75,7 @@ import TabKeyPress from './TabKeyPress';
             if (response[0] != 'info') prettyPrint([span]);
             el.appendChild(span);
             li.className = response[0];
-            li.innerHTML = '<span class="gutter"></span>';
+            li.innerHTML = '<span></span>';
             li.appendChild(el);
             Utils.appendLog(li);
             output.parentNode.scrollTop = 0;
