@@ -1,6 +1,6 @@
 # JS Console
 
-  - Simple node js console editor 
+  - Simple native JS console editor 
 
 ### Live Demo
 
